@@ -21,11 +21,6 @@ export function activate(context: vscode.ExtensionContext) {
       const convertedColors = matches.map(colorStr => {
         let oklch: string;
 
-        // Convert 'transparent' to 'rgba(0, 0, 0, 0)' for conversion
-        if (colorStr.trim() === 'transparent') {
-          colorStr = 'rgba(0, 0, 0, 0)';
-        }
-
         try {
           const color = new Color(colorStr); // Create a Color object
           const [l, c, h] = color.to('oklch').coords; // Convert to OKLCH

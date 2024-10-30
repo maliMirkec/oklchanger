@@ -1,71 +1,43 @@
-# oklchanger README
+# OKLCHanger!
 
-This is the README for your extension "oklchanger". After writing up a brief description, we recommend including the following sections.
+Convert any colors to oklch!
+
+A Visual Studio Code extension that converts various color definitions in selected text to the OKLCH color format. This extension supports named colors, HEX, RGB, RGBA, HSL, HSLA, Lab, and LCH color models.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- **Supports Multiple Color Formats**: Converts color definitions from named colors, HEX, RGB, RGBA, HSL, HSLA, Lab, and LCH formats to **OKLCH**.
+- **User Feedback**: Displays error messages for colors that cannot be converted.
 
-For example if there is an image subfolder under your extension project workspace:
+## Usage
 
-\!\[feature X\]\(images/feature-x.png\)
+1. Select the color definitions you want to convert in your code. It can be the whole code block.
+2. Open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
+3. Type `OKLCHanger!` and select the command.
+4. The converted colors will replace the original definitions in your selected text.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## Regex Explanation
 
-## Requirements
+The extension uses a regex pattern to match the following color formats:
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Named colors (e.g., `red`, `green`, `blue`)
+- HEX colors (e.g., `#ff0000`, `#f00`)
+- RGB/RGBA (e.g., `rgb(255, 0, 0)`, `rgba(255, 0, 0, 0.5)`)
+- HSL/HSLA (e.g., `hsl(0, 100%, 50%)`, `hsla(0, 100%, 50%, 0.5)`)
+- Lab and LCH colors (e.g., `lab(53.2329, 80.1093, 67.2201)`, `lch(53.23, 107.24, 0deg)`)
+- CSS variable syntax (e.g., `--color-named: red;`)
 
-## Extension Settings
+## Development
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+To contribute to this project or modify it:
 
-For example:
+1. Make your changes to the code.
+2. Test your changes by launching the extension in the Extension Development Host.
 
-This extension contributes the following settings:
+## License
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-## Known Issues
+## Acknowledgments
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+This extension uses the `colorjs.io` library for color conversions. For more information, visit the [colorjs.io](https://colorjs.io) website.
