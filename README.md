@@ -38,7 +38,7 @@ To contribute to this project or modify it:
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/maliMirkec/clamp-it/refs/heads/main/LICENCE.md) file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/maliMirkec/oklchanger/refs/heads/master/LICENSE.md) file for details.
 
 ## Acknowledgments
 
