@@ -1,5 +1,7 @@
 # OKLCHanger!
 
+![oklchanger](https://raw.githubusercontent.com/maliMirkec/oklchanger/5a2a93f680c0401ad0e3951b924c51a0635dcf4d/gfx/oklchanger.gif)
+
 Convert any colors to oklch!
 
 A Visual Studio Code extension that converts various color definitions in selected text to the OKLCH color format. This extension supports named colors, HEX, RGB, RGBA, HSL, HSLA, Lab, and LCH color models.
