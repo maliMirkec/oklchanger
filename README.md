@@ -43,3 +43,5 @@ This project is licensed under the MIT License. See the [LICENSE](https://raw.gi
 ## Acknowledgments
 
 This extension uses the `colorjs.io` library for color conversions. For more information, visit the [colorjs.io](https://colorjs.io) website.
+
+> Built with assistance of ChatGPT. ¯\(ツ)/¯
