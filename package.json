@@ -3,13 +3,13 @@
   "displayName": "oklchanger",
   "description": "Convert any colors to oklch.",
   "icon": "gfx/oklchanger.png",
-  "author": "Silvestar Bistrović <me@silvestar.codes/>(https://www.silvestar.codes/)",
+  "author": "Silvestar Bistrović <me@silvestar.codes> (https://www.silvestar.codes/)",
   "publisher": "starbist",
   "repository": {
     "type": "git",
     "url": "git+https://github.com:maliMirkec/oklchanger.git"
   },
-  "version": "0.0.2",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -62,5 +62,7 @@
     "typescript": "^5.6.3",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4"
-  }
+  },
+  "license": "MIT",
+  "licenseFile": "LICENSE.md"
 }
