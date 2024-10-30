@@ -29,6 +29,15 @@ The extension uses a regex pattern to match the following color formats:
 - Lab and LCH colors (e.g., `lab(53.2329, 80.1093, 67.2201)`, `lch(53.23, 107.24, 0deg)`)
 - CSS variable syntax (e.g., `--color-named: red;`)
 
+## Unsupported Color Formats
+
+Please note that the following color formats are not supported by this extension:
+
+- **Grayscale Colors**: Colors such as `#000`, `#fff`, `#efefef`, `8a8a8a`, and `#666` are not recognized.
+- **8-Character Hex Colors**: Hexadecimal color codes with 8 characters (e.g., `#818181FF`) are also unsupported.
+
+Ensure that the colors you wish to convert are in the correct format for the best results.
+
 ## Development
 
 To contribute to this project or modify it:
