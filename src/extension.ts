@@ -104,7 +104,7 @@ function formatValue(value: number): string {
 
 function showErrorMessages(errorMessages: string[]): void {
   const maxErrorsToShow = 100;
-  const displayedErrors = `Cannot convert colors: ${errorMessages.slice(0, maxErrorsToShow).join(', ')}. OKLCH transformation not supported. See Unsupported Color Formats.`;
+  const displayedErrors = `Cannot convert colors: ${errorMessages.slice(0, maxErrorsToShow).join(', ')}.`;
 
   vscode.window.showErrorMessage(displayedErrors, 'View More').then(selection => {
     if (selection === 'View More') {

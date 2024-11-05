@@ -22,21 +22,13 @@ A Visual Studio Code extension that converts various color definitions in select
 
 The extension uses a regex pattern to match the following color formats:
 
-- Named colors (e.g., `red`, `green`, `blue`)
-- HEX colors (e.g., `#ff0000`, `#f00`)
-- RGB/RGBA (e.g., `rgb(255, 0, 0)`, `rgba(255, 0, 0, 0.5)`)
-- HSL/HSLA (e.g., `hsl(0, 100%, 50%)`, `hsla(0, 100%, 50%, 0.5)`)
-- Lab and LCH colors (e.g., `lab(53.2329, 80.1093, 67.2201)`, `lch(53.23, 107.24, 0deg)`)
-- CSS variable syntax (e.g., `--color-named: red;`)
-
-## Unsupported Color Formats
-
-Please note that the following color formats are not supported by this extension:
-
-- **Grayscale Colors**: Colors such as `#000`, `#fff`, `#efefef`, `8a8a8a`, and `#666` are not recognized.
-- **8-Character Hex Colors**: Hexadecimal color codes with 8 characters (e.g., `#818181FF`) are also unsupported.
-
-Ensure that the colors you wish to convert are in the correct format for the best results.
+- Named colors (e.g., red, green, blue)
+- HEX colors (e.g., #ff0000, #f00, #f00ff0ff)
+- RGB/RGBA (e.g., rgb(255, 0, 0), rgba(255, 0, 0, 0.5))
+- HSL/HSLA (e.g., hsl(0, 100%, 50%), hsla(0, 100%, 50%, 0.5))
+- Lab and LCH colors (e.g., lab(53.2329, 80.1093, 67.2201), lch(53.23, 107.24, 0deg))
+- HWB colors (e.g., hwb(0, 0%, 0%))
+- CSS variable syntax (e.g., --color-named: red;)
 
 ## Development
 
