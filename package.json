@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+https://github.com:maliMirkec/oklchanger.git"
   },
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -35,7 +35,17 @@
         "command": "extension.convertColorsToOKLCH",
         "title": "OKLCHanger!"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "OKLCHanger! Settings",
+      "properties": {
+        "oklchConverter.useOpacity": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include opacity in OKLCH color output"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

@@ -87,9 +87,13 @@ function convertColor(colorStr: string, errorMessages: string[]): { original: st
     rgbaColor.alpha = rgbaColor.alpha ?? 1;
     const oklchColor = culori.oklch(rgbaColor);
 
+    // Read setting
+    const useOpacity = vscode.workspace.getConfiguration().get<boolean>("oklchConverter.useOpacity", true);
+    const alphaPart = useOpacity || rgbaColor.alpha < 1 ? ` / ${formatValue(rgbaColor.alpha)}` : "";
+
     return {
       original: colorStr,
-      converted: `oklch(${formatValue(oklchColor.l ?? 0)} ${formatValue(oklchColor.c ?? 0)} ${formatValue(oklchColor.h ?? 0)} / ${formatValue(rgbaColor.alpha)})`
+      converted: `oklch(${formatValue(oklchColor.l ?? 0)} ${formatValue(oklchColor.c ?? 0)} ${formatValue(oklchColor.h ?? 0)}${alphaPart})`
     };
   } catch (error) {
     errorMessages.push(colorStr);
