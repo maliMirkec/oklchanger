@@ -16,29 +16,48 @@ const LCH_COLOR = 'lch\\(\\s*-?\\d+(?:\\.\\d+)?\\s*,\\s*-?\\d+(?:\\.\\d+)?\\s*,\
 const HWB_COLOR = 'hwb\\(\\s*\\d{1,3}\\s*,\\s*\\d{1,3}%\\s*,\\s*\\d{1,3}%\\s*\\)';
 
 // Combine all parts into one regex
-const colorRegex = new RegExp(`(?<!\\w)(--\\w+:\\s*)?(?:${NAMED_COLORS}|${HEX_COLOR}|${RGB_COLOR}|${HSL_COLOR}|${HWB_COLOR}|${LAB_COLOR}|${LCH_COLOR})(?=\\s*;|\\s*$)`, 'gi');
+// Only match colors that appear after a colon (CSS property values)
+const colorRegex = new RegExp(`(?:(?:--\\w+)|(?:[a-zA-Z-]+))\\s*:\\s*(${NAMED_COLORS}|${HEX_COLOR}|${RGB_COLOR}|${HSL_COLOR}|${HWB_COLOR}|${LAB_COLOR}|${LCH_COLOR})(?=\\s*;|\\s*\\})`, 'gi');
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.convertColorsToOKLCH', async () => {
     const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
+    if (!editor) {
+      return;
+    }
 
     const selection = editor.selection;
     const selectedText = editor.document.getText(selection);
 
-    const matches = selectedText.match(colorRegex);
+    const matches = Array.from(selectedText.matchAll(colorRegex));
     const errorMessages: string[] = [];
 
-    if (matches) {
+    if (matches.length > 0) {
       let updatedText = selectedText;
-      const convertedColors = matches.map(colorStr => convertColor(colorStr, errorMessages));
 
-      // Filter out undefined entries
-      const validColors = convertedColors.filter((color): color is { original: string; converted: string } => color !== undefined);
+      // Process matches in reverse order to maintain correct positions
+      const matchesWithConversions = matches.map(match => {
+        const fullMatch = match[0]; // Full matched string (property: color)
+        const colorStr = match[1]; // Just the color value
+        const converted = convertColor(colorStr, errorMessages);
+        return { fullMatch, colorStr, converted };
+      }).filter(item => item.converted !== undefined);
+
+      // Replace each match with the property name + converted color
+      matchesWithConversions.forEach(({ fullMatch, converted }) => {
+        if (converted) {
+          // Extract property name from the full match
+          const propertyMatch = fullMatch.match(/^((?:--\w+)|(?:[a-zA-Z-]+))\s*:\s*/);
+          if (propertyMatch) {
+            const propertyName = propertyMatch[1];
+            const replacement = `${propertyName}: ${converted.converted}`;
+            updatedText = updatedText.replace(fullMatch, replacement);
+          }
+        }
+      });
 
       // Update the text in the editor
       editor.edit(editBuilder => {
-        updatedText = validColors.reduce((text, { original, converted }) => text.replace(original, converted), updatedText);
         editBuilder.replace(selection, updatedText);
       });
 
