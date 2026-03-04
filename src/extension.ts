@@ -3,21 +3,37 @@ import * as culori from 'culori';
 
 const NAMED_COLORS = '(?:aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen)';
 
-const HEX_COLOR = '#(?:[0-9a-fA-F]{3}){1,2}|#(?:[0-9a-fA-F]{8})';
+const HEX_COLOR = '#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})';
 
-const RGB_COLOR = 'rgba?\\(\\s*\\d{1,3}\\s*,\\s*\\d{1,3}\\s*,\\s*\\d{1,3}(?:,\\s*\\d?\\.?\\d+)?\\)';
+// Modern (space-separated) and legacy (comma-separated) RGB/RGBA
+const RGB_COLOR = 'rgba?\\(\\s*\\d+(?:\\.\\d+)?%?(?:\\s+\\d+(?:\\.\\d+)?%?\\s+\\d+(?:\\.\\d+)?%?(?:\\s*/\\s*\\d*\\.?\\d+%?)?|\\s*,\\s*\\d+(?:\\.\\d+)?%?\\s*,\\s*\\d+(?:\\.\\d+)?%?(?:\\s*,\\s*\\d*\\.?\\d+%?)?)\\s*\\)';
 
-const HSL_COLOR = 'hsla?\\(\\s*([0-9]+(?:\\.[0-9]+)?)\\s*(?:,|\\s)\\s*([0-9]+(?:\\.[0-9]+)?%)\\s*(?:,|\\s)\\s*([0-9]+(?:\\.[0-9]+)?%)(?:\\s*(?:/|,)\\s*([0-9]+(?:\\.[0-9]+)?%?))?\\s*\\)';
+// Modern (space-separated) and legacy (comma-separated) HSL/HSLA
+const HSL_COLOR = 'hsla?\\(\\s*(?:\\d+(?:\\.\\d+)?(?:deg|rad|turn|grad)?)(?:\\s+\\d+(?:\\.\\d+)?%\\s+\\d+(?:\\.\\d+)?%(?:\\s*/\\s*\\d*\\.?\\d+%?)?|\\s*,\\s*\\d+(?:\\.\\d+)?%\\s*,\\s*\\d+(?:\\.\\d+)?%(?:\\s*,\\s*\\d*\\.?\\d+%?)?)\\s*\\)';
 
-const LAB_COLOR = 'lab\\(\\s*-?\\d+(?:\\.\\d+)?\\s*,\\s*-?\\d+(?:\\.\\d+)?\\s*,\\s*-?\\d+(?:\\.\\d+)?\\)';
+// HWB - modern space-separated
+const HWB_COLOR = 'hwb\\(\\s*\\d+(?:\\.\\d+)?(?:deg|rad|turn|grad)?\\s+\\d+(?:\\.\\d+)?%\\s+\\d+(?:\\.\\d+)?%(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
 
-const LCH_COLOR = 'lch\\(\\s*-?\\d+(?:\\.\\d+)?\\s*,\\s*-?\\d+(?:\\.\\d+)?\\s*,\\s*-?\\d+(?:\\.\\d+)?\\s*deg\\)';
+// LAB - space-separated, optional % for lightness
+const LAB_COLOR = 'lab\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
 
-const HWB_COLOR = 'hwb\\(\\s*\\d{1,3}\\s*,\\s*\\d{1,3}%\\s*,\\s*\\d{1,3}%\\s*\\)';
+// OKLAB - space-separated
+const OKLAB_COLOR = 'oklab\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
 
-// Combine all parts into one regex
-// Only match colors that appear after a colon (CSS property values)
-const colorRegex = new RegExp(`(?:(?:--\\w+)|(?:[a-zA-Z-]+))\\s*:\\s*(${NAMED_COLORS}|${HEX_COLOR}|${RGB_COLOR}|${HSL_COLOR}|${HWB_COLOR}|${LAB_COLOR}|${LCH_COLOR})(?=\\s*;|\\s*\\})`, 'gi');
+// LCH - space-separated, optional % and optional deg suffix
+const LCH_COLOR = 'lch\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:deg)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
+
+// OKLCH - space-separated
+const OKLCH_COLOR = 'oklch\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:deg)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
+
+// color() function for wide-gamut color spaces
+const COLOR_FUNC = 'color\\(\\s*(?:display-p3|srgb|srgb-linear|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)(?:\\s+-?\\d+(?:\\.\\d+)?){3}(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
+
+// Match color values directly anywhere in the text (not tied to a CSS property context)
+const colorRegex = new RegExp(
+  `(${HEX_COLOR}|${OKLCH_COLOR}|${OKLAB_COLOR}|${LCH_COLOR}|${LAB_COLOR}|${HWB_COLOR}|${HSL_COLOR}|${RGB_COLOR}|${COLOR_FUNC}|${NAMED_COLORS})`,
+  'gi'
+);
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand('extension.convertColorsToOKLCH', async () => {
@@ -27,38 +43,35 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     const selection = editor.selection;
-    const selectedText = editor.document.getText(selection);
+    const targetRange = selection.isEmpty
+      ? new vscode.Range(editor.document.positionAt(0), editor.document.positionAt(editor.document.getText().length))
+      : selection;
+    const selectedText = editor.document.getText(targetRange);
 
     const matches = Array.from(selectedText.matchAll(colorRegex));
     const errorMessages: string[] = [];
 
     if (matches.length > 0) {
-      let updatedText = selectedText;
+      // Build replacements using match indices, then apply in reverse to preserve positions
+      const replacements: Array<{ index: number; length: number; replacement: string }> = [];
 
-      // Process matches in reverse order to maintain correct positions
-      const matchesWithConversions = matches.map(match => {
-        const fullMatch = match[0]; // Full matched string (property: color)
-        const colorStr = match[1]; // Just the color value
+      for (const match of matches) {
+        const colorStr = match[0];
         const converted = convertColor(colorStr, errorMessages);
-        return { fullMatch, colorStr, converted };
-      }).filter(item => item.converted !== undefined);
-
-      // Replace each match with the property name + converted color
-      matchesWithConversions.forEach(({ fullMatch, converted }) => {
         if (converted) {
-          // Extract property name from the full match
-          const propertyMatch = fullMatch.match(/^((?:--\w+)|(?:[a-zA-Z-]+))\s*:\s*/);
-          if (propertyMatch) {
-            const propertyName = propertyMatch[1];
-            const replacement = `${propertyName}: ${converted.converted}`;
-            updatedText = updatedText.replace(fullMatch, replacement);
-          }
+          replacements.push({ index: match.index!, length: colorStr.length, replacement: converted.converted });
         }
-      });
+      }
+
+      let updatedText = selectedText;
+      for (let i = replacements.length - 1; i >= 0; i--) {
+        const { index, length, replacement } = replacements[i];
+        updatedText = updatedText.slice(0, index) + replacement + updatedText.slice(index + length);
+      }
 
       // Update the text in the editor
       editor.edit(editBuilder => {
-        editBuilder.replace(selection, updatedText);
+        editBuilder.replace(targetRange, updatedText);
       });
 
       if (errorMessages.length) {
@@ -73,42 +86,18 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function convertColor(colorStr: string, errorMessages: string[]): { original: string; converted: string } | undefined {
-  let rgbaColor;
-
   try {
-    rgbaColor = culori.parse(colorStr);
+    const parsed = culori.parse(colorStr);
 
-    if (!rgbaColor) {
-      const labColorMatch = colorStr.match(/lab\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/i);
-      const lchMatch = colorStr.match(/lch\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)deg\s*\)/i);
-      const hwbColorMatch = colorStr.match(/hwb\(\s*(\d{1,3})\s*,\s*(\d{1,3})%\s*,\s*(\d{1,3})%\s*\)/i);
-
-      if (labColorMatch) {
-        const l = parseFloat(labColorMatch[1]);
-        const a = parseFloat(labColorMatch[2]);
-        const b = parseFloat(labColorMatch[3]);
-        rgbaColor = culori.rgb({ mode: 'lab', l, a, b });
-      } else if (lchMatch) {
-        const l = parseFloat(lchMatch[1]);
-        const c = parseFloat(lchMatch[2]);
-        const h = parseFloat(lchMatch[3]);
-        rgbaColor = culori.rgb({ mode: 'lch', l, c, h });
-      } else if (hwbColorMatch) {
-        const h = parseFloat(hwbColorMatch[1]);
-        const w = parseFloat(hwbColorMatch[2]);
-        const b = parseFloat(hwbColorMatch[3]);
-        rgbaColor = culori.rgb({ mode: 'hwb', h, w, b });
-      } else {
-        throw new Error(`Cannot convert ${colorStr}.`);
-      }
+    if (!parsed) {
+      throw new Error(`Cannot parse ${colorStr}.`);
     }
 
-    rgbaColor.alpha = rgbaColor.alpha ?? 1;
-    const oklchColor = culori.oklch(rgbaColor);
+    parsed.alpha = parsed.alpha ?? 1;
+    const oklchColor = culori.oklch(parsed);
 
-    // Read setting
     const useOpacity = vscode.workspace.getConfiguration().get<boolean>("oklchConverter.useOpacity", true);
-    const alphaPart = useOpacity || rgbaColor.alpha < 1 ? ` / ${formatValue(rgbaColor.alpha)}` : "";
+    const alphaPart = useOpacity || parsed.alpha < 1 ? ` / ${formatValue(parsed.alpha)}` : "";
 
     return {
       original: colorStr,

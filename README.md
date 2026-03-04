@@ -4,45 +4,44 @@
 
 Convert any colors to oklch!
 
-A Visual Studio Code extension that converts various color definitions in selected text to the OKLCH color format. This extension supports named colors, HEX, RGB, RGBA, HSL, HSLA, Lab, and LCH color models.
+A Visual Studio Code extension that converts various color definitions to the OKLCH color format.
 
 ## Features
 
-- **Supports Multiple Color Formats**: Converts color definitions from named colors, HEX, RGB, RGBA, HSL, HSLA, Lab, and LCH formats to **OKLCH**.
-- **User Feedback**: Displays error messages for colors that cannot be converted.
+- **Supports Multiple Color Formats**: Converts named colors, HEX, RGB/RGBA, HSL/HSLA, HWB, Lab, OKLAB, LCH, OKLCH, and `color()` (display-p3, srgb, rec2020, etc.)
+- **Modern CSS Syntax**: Handles both legacy comma-separated and modern space-separated syntax (e.g. `rgb(255 0 0 / 50%)`)
+- **Works on Any Selection**: Select a block of code to convert only that part, or run with nothing selected to process the entire file
+- **Multi-value Properties**: Correctly converts all colors in multi-value properties like `background`
+- **User Feedback**: Reports colors that could not be converted
 
 ## Usage
 
-1. Select the color definitions you want to convert in your code. It can be the whole code block.
-2. Open the command palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
+1. Optionally select the text you want to convert (or select nothing to process the whole file).
+2. Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P` on Mac).
 3. Type `OKLCHanger!` and select the command.
-4. The converted colors will replace the original definitions in your selected text.
+4. The converted OKLCH values replace the original color definitions.
 
-## Regex Explanation
+## Supported Color Formats
 
-The extension uses a regex pattern to match the following color formats:
+- Named colors (e.g. `red`, `cornflowerblue`)
+- HEX (e.g. `#f00`, `#ff0000`, `#ff0000ff`)
+- RGB/RGBA — legacy and modern (e.g. `rgb(255, 0, 0)`, `rgb(255 0 0 / 50%)`)
+- HSL/HSLA — legacy and modern (e.g. `hsl(0, 100%, 50%)`, `hsl(0 100% 50% / 1)`)
+- HWB (e.g. `hwb(0 0% 0%)`)
+- Lab (e.g. `lab(50% 75 60)`)
+- OKLAB (e.g. `oklab(0.6 0.2 0.1)`)
+- LCH (e.g. `lch(53% 105 40)`)
+- OKLCH (e.g. `oklch(0.6 0.25 20)`)
+- `color()` function (e.g. `color(display-p3 1 0 0)`)
 
-- Named colors (e.g., red, green, blue)
-- HEX colors (e.g., #ff0000, #f00, #f00ff0ff)
-- RGB/RGBA (e.g., rgb(255, 0, 0), rgba(255, 0, 0, 0.5))
-- HSL/HSLA (e.g., hsl(0, 100%, 50%), hsla(0, 100%, 50%, 0.5))
-- Lab and LCH colors (e.g., lab(53.2329, 80.1093, 67.2201), lch(53.23, 107.24, 0deg))
-- HWB colors (e.g., hwb(0, 0%, 0%))
-- CSS variable syntax (e.g., --color-named: red;)
+## Settings
 
-## Development
-
-To contribute to this project or modify it:
-
-1. Make your changes to the code.
-2. Test your changes by launching the extension in the Extension Development Host.
+| Setting | Default | Description |
+|---|---|---|
+| `oklchConverter.useOpacity` | `true` | Include the `/ alpha` part in the OKLCH output |
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](https://raw.githubusercontent.com/maliMirkec/oklchanger/refs/heads/master/LICENSE.md) file for details.
+MIT — see [LICENSE](https://raw.githubusercontent.com/maliMirkec/oklchanger/refs/heads/master/LICENSE.md).
 
-## Acknowledgments
-
-This extension uses the `colorjs.io` library for color conversions. For more information, visit the [colorjs.io](https://colorjs.io) website.
-
-> Built with assistance of ChatGPT. ¯\(ツ)/¯
+> Built with assistance of Claude Code.
