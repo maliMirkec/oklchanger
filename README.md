@@ -36,9 +36,9 @@ A Visual Studio Code extension that converts various color definitions to the OK
 
 ## Settings
 
-| Setting | Default | Description |
-|---|---|---|
-| `oklchConverter.useOpacity` | `true` | Include the `/ alpha` part in the OKLCH output |
+| Setting                     | Default | Description                                    |
+| --------------------------- | ------- | ---------------------------------------------- |
+| `oklchConverter.useOpacity` | `true`  | Include the `/ alpha` part in the OKLCH output |
 
 ## License
 
