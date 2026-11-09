@@ -12,3 +12,8 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+gfx/*.gif
+gfx/*.mp4
+gfx/oklchanger-2x.png
+.editorconfig
+.prettierrc.json

@@ -2,46 +2,52 @@
 
 ![oklchanger](https://raw.githubusercontent.com/maliMirkec/oklchanger/5a2a93f680c0401ad0e3951b924c51a0635dcf4d/gfx/oklchanger.gif)
 
-Convert any colors to oklch!
+OKLCHanger! is a VS Code extension that converts colors in your code to `oklch()`.
 
-A Visual Studio Code extension that converts various color definitions to the OKLCH color format.
-
-## Features
-
-- **Supports Multiple Color Formats**: Converts named colors, HEX, RGB/RGBA, HSL/HSLA, HWB, Lab, OKLAB, LCH, OKLCH, and `color()` (display-p3, srgb, rec2020, etc.)
-- **Modern CSS Syntax**: Handles both legacy comma-separated and modern space-separated syntax (e.g. `rgb(255 0 0 / 50%)`)
-- **Works on Any Selection**: Select a block of code to convert only that part, or run with nothing selected to process the entire file
-- **Multi-value Properties**: Correctly converts all colors in multi-value properties like `background`
-- **User Feedback**: Reports colors that could not be converted
+I use OKLCH in all my projects now. Converting old colors by hand got boring fast, so I built this.
 
 ## Usage
 
-1. Optionally select the text you want to convert (or select nothing to process the whole file).
-2. Open the command palette (`Ctrl+Shift+P` / `Cmd+Shift+P` on Mac).
-3. Type `OKLCHanger!` and select the command.
-4. The converted OKLCH values replace the original color definitions.
+1. Select the code you want to convert. Select nothing to convert the whole file.
+2. Open the command palette (`Cmd+Shift+P` on Mac, `Ctrl+Shift+P` on Windows and Linux).
+3. Run `OKLCHanger!`.
 
-## Supported Color Formats
+That's it. Every color in the selection is now an `oklch()` value.
 
-- Named colors (e.g. `red`, `cornflowerblue`)
-- HEX (e.g. `#f00`, `#ff0000`, `#ff0000ff`)
-- RGB/RGBA — legacy and modern (e.g. `rgb(255, 0, 0)`, `rgb(255 0 0 / 50%)`)
-- HSL/HSLA — legacy and modern (e.g. `hsl(0, 100%, 50%)`, `hsl(0 100% 50% / 1)`)
-- HWB (e.g. `hwb(0 0% 0%)`)
-- Lab (e.g. `lab(50% 75 60)`)
-- OKLAB (e.g. `oklab(0.6 0.2 0.1)`)
-- LCH (e.g. `lch(53% 105 40)`)
-- OKLCH (e.g. `oklch(0.6 0.25 20)`)
-- `color()` function (e.g. `color(display-p3 1 0 0)`)
+## Features
+
+- It works with one selection, many selections, or the whole file.
+- It converts every color in multi-value properties, like `background: linear-gradient(red, #00f)`.
+- It skips color names inside identifiers, like `.b-color-blue`, `--red`, `$red`, or `tan()`.
+- It tells you which colors it couldn't convert.
+
+## Supported colors
+
+- Named colors, like `red`, `cornflowerblue`, or `rebeccapurple`
+- Hex, like `#f00`, `#ff0000`, or `#ff0000ff`
+- `rgb()` and `rgba()`, like `rgb(255, 0, 0)` or `rgb(255 0 0 / 50%)`
+- `hsl()` and `hsla()`, like `hsl(0, 100%, 50%)` or `hsl(0 100% 50% / 1)`
+- `hwb()`, like `hwb(0 0% 0%)`
+- `lab()`, like `lab(50% 75 60)`
+- `lch()`, like `lch(53% 105 40)`
+- `oklab()`, like `oklab(0.6 0.2 0.1)`
+- `oklch()`, like `oklch(0.6 0.25 20)`
+- `color()`, like `color(display-p3 1 0 0)`
+
+Both the old comma syntax and the modern space syntax work.
+
+## Output
+
+Lightness and chroma have 3 decimals. Hue has 2. For example, `red` becomes `oklch(0.628 0.258 29.23 / 1)`.
 
 ## Settings
 
-| Setting                     | Default | Description                                    |
-| --------------------------- | ------- | ---------------------------------------------- |
-| `oklchConverter.useOpacity` | `true`  | Include the `/ alpha` part in the OKLCH output |
+| Setting | Default | Description |
+| --- | --- | --- |
+| `oklchConverter.useOpacity` | `true` | Add the `/ alpha` part to every color. If you turn it off, only colors with opacity below 1 get it. |
 
 ## License
 
-MIT — see [LICENSE](https://raw.githubusercontent.com/maliMirkec/oklchanger/refs/heads/master/LICENSE.md).
+MIT. See [LICENSE](https://raw.githubusercontent.com/maliMirkec/oklchanger/refs/heads/master/LICENSE.md).
 
 > Built with assistance of Claude Code.

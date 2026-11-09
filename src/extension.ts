@@ -1,169 +1,88 @@
 import * as vscode from 'vscode';
-import * as culori from 'culori';
+import { findColors, toOklch } from './convert';
 
-const NAMED_COLORS =
-  '(?:aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|snow|springgreen|steelblue|tan|teal|thistle|tomato|transparent|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen)';
-
-const HEX_COLOR =
-  '#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{4}|[0-9a-fA-F]{3})';
-
-// Modern (space-separated) and legacy (comma-separated) RGB/RGBA
-const RGB_COLOR =
-  'rgba?\\(\\s*\\d+(?:\\.\\d+)?%?(?:\\s+\\d+(?:\\.\\d+)?%?\\s+\\d+(?:\\.\\d+)?%?(?:\\s*/\\s*\\d*\\.?\\d+%?)?|\\s*,\\s*\\d+(?:\\.\\d+)?%?\\s*,\\s*\\d+(?:\\.\\d+)?%?(?:\\s*,\\s*\\d*\\.?\\d+%?)?)\\s*\\)';
-
-// Modern (space-separated) and legacy (comma-separated) HSL/HSLA
-const HSL_COLOR =
-  'hsla?\\(\\s*(?:\\d+(?:\\.\\d+)?(?:deg|rad|turn|grad)?)(?:\\s+\\d+(?:\\.\\d+)?%\\s+\\d+(?:\\.\\d+)?%(?:\\s*/\\s*\\d*\\.?\\d+%?)?|\\s*,\\s*\\d+(?:\\.\\d+)?%\\s*,\\s*\\d+(?:\\.\\d+)?%(?:\\s*,\\s*\\d*\\.?\\d+%?)?)\\s*\\)';
-
-// HWB - modern space-separated
-const HWB_COLOR =
-  'hwb\\(\\s*\\d+(?:\\.\\d+)?(?:deg|rad|turn|grad)?\\s+\\d+(?:\\.\\d+)?%\\s+\\d+(?:\\.\\d+)?%(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// LAB - space-separated, optional % for lightness
-const LAB_COLOR =
-  'lab\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// OKLAB - space-separated
-const OKLAB_COLOR =
-  'oklab\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// LCH - space-separated, optional % and optional deg suffix
-const LCH_COLOR =
-  'lch\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:deg)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// OKLCH - space-separated
-const OKLCH_COLOR =
-  'oklch\\(\\s*-?\\d+(?:\\.\\d+)?%?\\s+-?\\d+(?:\\.\\d+)?\\s+-?\\d+(?:\\.\\d+)?(?:deg)?(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// color() function for wide-gamut color spaces
-const COLOR_FUNC =
-  'color\\(\\s*(?:display-p3|srgb|srgb-linear|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)(?:\\s+-?\\d+(?:\\.\\d+)?){3}(?:\\s*/\\s*\\d*\\.?\\d+%?)?\\s*\\)';
-
-// Match color values directly anywhere in the text (not tied to a CSS property context)
-// Named colors use word-boundary guards to avoid matching inside hyphenated identifiers (e.g. white-space)
-const colorRegex = new RegExp(
-  `(${HEX_COLOR}|${OKLCH_COLOR}|${OKLAB_COLOR}|${LCH_COLOR}|${LAB_COLOR}|${HWB_COLOR}|${HSL_COLOR}|${RGB_COLOR}|${COLOR_FUNC}|(?<![\\w-])${NAMED_COLORS}(?![\\w-]))`,
-  'gi',
-);
+const MAX_ERRORS_IN_MESSAGE = 5;
 
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand(
-    'extension.convertColorsToOKLCH',
-    async () => {
-      const editor = vscode.window.activeTextEditor;
-      if (!editor) {
-        return;
-      }
-
-      const selection = editor.selection;
-      const targetRange = selection.isEmpty
-        ? new vscode.Range(
-            editor.document.positionAt(0),
-            editor.document.positionAt(editor.document.getText().length),
-          )
-        : selection;
-      const selectedText = editor.document.getText(targetRange);
-
-      const matches = Array.from(selectedText.matchAll(colorRegex));
-      const errorMessages: string[] = [];
-
-      if (matches.length > 0) {
-        // Build replacements using match indices, then apply in reverse to preserve positions
-        const replacements: Array<{
-          index: number;
-          length: number;
-          replacement: string;
-        }> = [];
-
-        for (const match of matches) {
-          const colorStr = match[0];
-          const converted = convertColor(colorStr, errorMessages);
-          if (converted) {
-            replacements.push({
-              index: match.index!,
-              length: colorStr.length,
-              replacement: converted.converted,
-            });
-          }
-        }
-
-        let updatedText = selectedText;
-        for (let i = replacements.length - 1; i >= 0; i--) {
-          const { index, length, replacement } = replacements[i];
-          updatedText =
-            updatedText.slice(0, index) +
-            replacement +
-            updatedText.slice(index + length);
-        }
-
-        // Update the text in the editor
-        editor.edit((editBuilder) => {
-          editBuilder.replace(targetRange, updatedText);
-        });
-
-        if (errorMessages.length) {
-          showErrorMessages(errorMessages);
-        }
-      } else {
-        vscode.window.showInformationMessage(
-          'No color definitions found in the selected text.',
-        );
-      }
-    },
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'extension.convertColorsToOKLCH',
+      convertColors,
+    ),
   );
-
-  context.subscriptions.push(disposable);
 }
 
-function convertColor(
-  colorStr: string,
-  errorMessages: string[],
-): { original: string; converted: string } | undefined {
-  try {
-    const parsed = culori.parse(colorStr);
+async function convertColors(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return;
+  }
 
-    if (!parsed) {
-      throw new Error(`Cannot parse ${colorStr}.`);
+  const { document } = editor;
+  const useOpacity = vscode.workspace
+    .getConfiguration('oklchConverter', document.uri)
+    .get<boolean>('useOpacity', true);
+
+  const ranges = editor.selections.every((selection) => selection.isEmpty)
+    ? [new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length))]
+    : editor.selections.filter((selection) => !selection.isEmpty);
+
+  const edits: Array<{ range: vscode.Range; text: string }> = [];
+  const failed: string[] = [];
+  let found = 0;
+
+  for (const range of ranges) {
+    const offset = document.offsetAt(range.start);
+    for (const match of findColors(document.getText(range))) {
+      found++;
+      const converted = toOklch(match.text, useOpacity);
+      if (converted === undefined) {
+        failed.push(match.text);
+        continue;
+      }
+      if (converted !== match.text) {
+        const start = document.positionAt(offset + match.index);
+        const end = document.positionAt(offset + match.index + match.text.length);
+        edits.push({ range: new vscode.Range(start, end), text: converted });
+      }
     }
+  }
 
-    parsed.alpha = parsed.alpha ?? 1;
-    const oklchColor = culori.oklch(parsed);
+  if (found === 0) {
+    vscode.window.showInformationMessage('No colors found.');
+    return;
+  }
 
-    const useOpacity = vscode.workspace
-      .getConfiguration()
-      .get<boolean>('oklchConverter.useOpacity', true);
-    const alphaPart =
-      useOpacity || parsed.alpha < 1 ? ` / ${formatValue(parsed.alpha)}` : '';
+  if (edits.length > 0) {
+    await editor.edit((builder) => {
+      for (const edit of edits) {
+        builder.replace(edit.range, edit.text);
+      }
+    });
+  }
 
-    return {
-      original: colorStr,
-      converted: `oklch(${formatValue(oklchColor.l ?? 0)} ${formatValue(oklchColor.c ?? 0)} ${formatValue(oklchColor.h ?? 0)}${alphaPart})`,
-    };
-  } catch (error) {
-    errorMessages.push(colorStr);
-    return undefined;
+  if (failed.length > 0) {
+    showErrors(failed);
+  } else if (edits.length === 0) {
+    vscode.window.showInformationMessage('All colors are already in OKLCH.');
   }
 }
 
-function formatValue(value: number): string {
-  const formatted = value.toFixed(2).replace(/\.00$/, '');
-  return Object.is(formatted, '-0') ? '0' : formatted;
-}
+async function showErrors(failed: string[]): Promise<void> {
+  const shown = failed.slice(0, MAX_ERRORS_IN_MESSAGE).join(', ');
+  const more = failed.length > MAX_ERRORS_IN_MESSAGE ? ', …' : '';
+  const choice = await vscode.window.showErrorMessage(
+    `Cannot convert ${failed.length} color(s): ${shown}${more}`,
+    'View All',
+  );
 
-function showErrorMessages(errorMessages: string[]): void {
-  const maxErrorsToShow = 100;
-  const displayedErrors = `Cannot convert colors: ${errorMessages.slice(0, maxErrorsToShow).join(', ')}.`;
-
-  vscode.window
-    .showErrorMessage(displayedErrors, 'View More')
-    .then((selection) => {
-      if (selection === 'View More') {
-        const allErrorsText = errorMessages.join('\n');
-        vscode.workspace
-          .openTextDocument({ content: allErrorsText, language: 'plaintext' })
-          .then((doc) => vscode.window.showTextDocument(doc));
-      }
+  if (choice === 'View All') {
+    const doc = await vscode.workspace.openTextDocument({
+      content: failed.join('\n'),
+      language: 'plaintext',
     });
+    await vscode.window.showTextDocument(doc);
+  }
 }
 
 export function deactivate() {}
